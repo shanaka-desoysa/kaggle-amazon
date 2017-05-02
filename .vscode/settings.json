@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "C:/Users/desoyss/AppData/Local/Continuum/Anaconda3/envs/keras/python",
+    "python.linting.pylintArgs": ["--errors-only"]
+}

@@ -18,6 +18,9 @@ from sklearn.cross_validation import KFold
 from sklearn.metrics import fbeta_score
 import time
 
+IMAGE_RESIZE = (64, 64)
+INPUT_SHAPE = (64, 64, 3)
+
 x_train = []
 x_test = []
 y_train = []
@@ -31,17 +34,17 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-for f, tags in tqdm(df_train.values[], miniters=1000):
+for f, tags in tqdm(df_train.values, miniters=1000):
     img = cv2.imread('C:/data/amazon/train-jpg/{}.jpg'.format(f))
     targets = np.zeros(17)
     for t in tags.split(' '):
         targets[label_map[t]] = 1 
-    x_train.append(cv2.resize(img, (32, 32)))
+    x_train.append(cv2.resize(img, IMAGE_RESIZE))
     y_train.append(targets)
 
 for f, tags in tqdm(df_test.values, miniters=1000):
     img = cv2.imread('C:/data/amazon/test-jpg/{}.jpg'.format(f))
-    x_test.append(cv2.resize(img, (32, 32)))
+    x_test.append(cv2.resize(img, IMAGE_RESIZE))
     
 y_train = np.array(y_train, np.uint8)
 x_train = np.array(x_train, np.float32) / 255.
@@ -79,13 +82,13 @@ for train_index, test_index in kf:
         kfold_weights_path = os.path.join('', 'weights_kfold_' + str(num_fold) + '.h5')
         
         model = Sequential()
-        model.add(Conv2D(32, 3, 3, activation='relu', input_shape=(32, 32, 3)))
+        model.add(Conv2D(32, (3, 3), activation='relu', input_shape=INPUT_SHAPE))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Conv2D(48, 3, 3, activation='relu'))
+        model.add(Conv2D(48, (3, 3), activation='relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.25))
 
-        model.add(Conv2D(64, 3, 3, activation='relu'))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.25))
         model.add(Flatten())
