@@ -27,47 +27,49 @@ import csv
 # print(img.shape)
 
 
+INPUT_SHAPE = (100, 100, 3)
+MODEL_WEIGHTS = 'weights_model2_8.h5'
+CSV_FILE = 'csvfile_0_2.csv'
+
 x_test = test_load()
 x_test = x_test.astype('float32')
-x_test /= 255
+x_test /= 255.
 
 
 model = Sequential()
-model.add(Conv2D(32, (3, 3), padding='same', input_shape=(100, 100, 3)))
-model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=INPUT_SHAPE))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(48, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(64, (3, 3), padding='same'))
-model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
-
 model.add(Flatten())
-model.add(Dense(512))
-model.add(Activation('relu'))
+model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(17))
-model.add(Activation('sigmoid'))
+
+model.add(Dense(17, activation='sigmoid'))
 
 
 # let's train the model using SGD + momentum (how original).
-sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+# sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+# model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', 
+                      optimizer='adam',
+                      metrics=['accuracy'])
 
-model.load_weights("weights.01-0.92233.hdf5")
+model.load_weights(MODEL_WEIGHTS)
 
 # model.summary()
 
 
 # best_threshold = [0.365,  0.392,  0.329,  0.463,  0.251,  0.086,  0.201,
 #                   0.148,  0.004,  0.606, 0.399,  0.007,  0.112,  0.027,  0.013,  0.011,  0.005]
-best_threshold = [0.4,  0.4,  0.3,  0.5,  0.3,  0.1,  0.2,
-                  0.1,  0.1,  0.6, 0.4,  0.1,  0.1,  0.1,  0.1,  0.1,  0.1]
+#best_threshold = [0.4,  0.4,  0.3,  0.5,  0.3,  0.1,  0.2, 0.1,  0.1,  0.6, 0.4,  0.1,  0.1,  0.1,  0.1,  0.1,  0.1]
+#best_threshold = [0.4,  0.4,  0.4,  0.4,  0.3,  0.3,  0.3, 0.2,  0.1,  0.1, 0.5,  0.1,  0.1,  0.1,  0.1,  0.1,  0.1] # score 0.82925
+best_threshold = [0.2] * 17
 
 # print("best_threshold: {}".format(best_threshold))
 
@@ -97,7 +99,7 @@ classes = ['haze',
 y_pred = []
 
 ##text=List of strings to be written to file
-with open('csvfile.csv','w') as file:
+with open(CSV_FILE,'w') as file:
     file.write("image_name,tags")
     file.write('\n')
 
@@ -108,7 +110,7 @@ with open('csvfile.csv','w') as file:
         # extracting actual class name
         y_pred = [classes[i] for i in range(17) if y_pred[i] == 1]
         y_pred = " ".join([str(item) for item in y_pred])
-        print(y_pred)
+        # print(y_pred)
         line = "test_{},{}".format(i, y_pred)
         file.write(line)
         file.write('\n')

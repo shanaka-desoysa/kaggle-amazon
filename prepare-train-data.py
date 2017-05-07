@@ -6,8 +6,9 @@ import scipy.io as sio
 import os
 
 image_path = "c:/data/amazon/train-jpg"     # images
-image_resize = (256,256)
+image_resize = (128,128)
 max_image_idx = 40478
+OUTPUT_FILE = "train-dataset-128.h5"
 # sample = pd.read_csv('c:/data/amazon/sample_submission.csv')
 # print(sample.shape)
 # sample.head()
@@ -45,7 +46,7 @@ for i in range(0, max_image_idx + 1):
     x.append(img)
     
 x = np.array(x)
-f = h5py.File("train-dataset-256.h5")
+f = h5py.File(OUTPUT_FILE)
 f['x'] = x
 f['y'] = y
 f.close()

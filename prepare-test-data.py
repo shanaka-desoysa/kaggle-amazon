@@ -5,9 +5,9 @@ import cv2
 import scipy.io as sio
 import os
 
-data_file = "test-dataset.h5"
+data_file = "test-dataset-128.h5"
 image_path = "c:/data/amazon/test-jpg"     # images
-image_resize = (100,100)
+image_resize = (128,128)
 max_image_idx = 40668
 # sample = pd.read_csv('c:/data/amazon/sample_submission.csv')
 # print(sample.shape)
